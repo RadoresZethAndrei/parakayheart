@@ -21,28 +21,30 @@
       align-items: center;
       justify-content: center;
       gap: 30px;
-      padding: 30px;
+      padding: clamp(15px, 4vw, 30px);
     }
 
     h1 {
-      font-size: 3rem;
+      font-size: clamp(1.5rem, 5vw, 3rem);
       color: #333;
       text-align: center;
+      word-wrap: break-word;
     }
 
     h4 {
-      font-size: 1.4rem;
+      font-size: clamp(1rem, 3vw, 1.4rem);
       color: #555;
       text-align: center;
+      padding: 0 10px;
     }
 
     .back-btn {
       font-family: 'Pixelify Sans', sans-serif;
-      font-size: 1.2rem;
+      font-size: clamp(0.9rem, 2.5vw, 1.2rem);
       background: none;
       border: 2px solid #333;
       color: #333;
-      padding: 10px 28px;
+      padding: clamp(8px, 1.5vw, 10px) clamp(15px, 3vw, 28px);
       border-radius: 6px;
       cursor: pointer;
       transition: background 0.2s, color 0.2s;
@@ -57,14 +59,24 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 40px;
-      flex-wrap: nowrap;
+      gap: clamp(10px, 3vw, 40px);
+      flex-wrap: wrap;
       width: 100%;
     }
 
+    @media (max-width: 768px) {
+      .wheel-wrapper {
+        flex-direction: column;
+      }
+      
+      .cat {
+        display: none;
+      }
+    }
+
     .cat {
-      width: 200px;
-      height: 200px;
+      width: clamp(80px, 15vw, 200px);
+      height: clamp(80px, 15vw, 200px);
       flex-shrink: 1;
       min-width: 80px;
     }
@@ -111,6 +123,10 @@
       display: block;
       border-radius: 50%;
       box-shadow: 0 6px 32px rgba(0,0,0,0.2);
+      max-width: 90vw;
+      max-height: 90vw;
+      width: 100%;
+      height: auto;
     }
 
     .spin-btn {
@@ -118,17 +134,17 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 110px;
-      height: 110px;
+      width: clamp(70px, 12vw, 110px);
+      height: clamp(70px, 12vw, 110px);
       border-radius: 50%;
       background: #fff;
-      border: 5px solid #333;
+      border: clamp(3px, 0.8vw, 5px) solid #333;
       font-family: 'Pixelify Sans', sans-serif;
-      font-size: 1.1rem;
+      font-size: clamp(0.8rem, 2vw, 1.1rem);
       font-weight: 700;
       cursor: pointer;
       color: #333;
-      box-shadow: 0 0 0 5px #fff, 0 4px 16px rgba(0,0,0,0.3);
+      box-shadow: 0 0 0 clamp(2px, 0.8vw, 5px) #fff, 0 4px 16px rgba(0,0,0,0.3);
       transition: transform 0.1s, box-shadow 0.1s;
       z-index: 10;
     }
@@ -157,12 +173,13 @@
 
     .result-box {
       background: #feefe5;
-      border: 5px solid #333;
+      border: clamp(3px, 1vw, 5px) solid #333;
       border-radius: 20px;
-      padding: 50px 60px;
+      padding: clamp(30px, 5vw, 50px) clamp(30px, 6vw, 60px);
       text-align: center;
       animation: pop 0.3s ease;
-      max-width: 500px;
+      max-width: clamp(280px, 90vw, 500px);
+      margin: 20px;
     }
 
     @keyframes pop {
@@ -171,23 +188,25 @@
     }
 
     .result-box h2 {
-      font-size: 1.8rem;
+      font-size: clamp(1.2rem, 4vw, 1.8rem);
       color: #333;
       margin-bottom: 16px;
     }
 
     .result-box h3 {
-      font-size: 1.2rem;
+      font-size: clamp(0.9rem, 2.5vw, 1.2rem);
       color: #555;
       margin-top: 20px;
       line-height: 1.5;
+      word-wrap: break-word;
     }
 
     .result-label {
-      font-size: 2rem;
+      font-size: clamp(1.2rem, 3.5vw, 2rem);
       font-weight: 700;
       color: #333;
       line-height: 1.4;
+      word-wrap: break-word;
     }
   </style>
 </head>
@@ -205,7 +224,7 @@
 
     <div class="wheel-area">
       <div class="pointer"></div>
-      <canvas id="wheel" width="600" height="600"></canvas>
+      <canvas id="wheel"></canvas>
       <button class="spin-btn" id="spinBtn">SPIN</button>
     </div>
 
@@ -237,9 +256,20 @@
     const resultOverlay = document.getElementById("resultOverlay");
     const resultLabel = document.getElementById("resultLabel");
 
+    // Set canvas size responsively
+    function resizeCanvas() {
+      const container = canvas.parentElement;
+      const maxSize = Math.min(window.innerWidth * 0.85, 600);
+      canvas.width = maxSize;
+      canvas.height = maxSize;
+    }
+
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
     const tot = sectors.length;
     const arc = (2 * Math.PI) / tot;
-    const rad = canvas.width / 2;
+    let rad = canvas.width / 2;
 
     let ang = 0;
     let angVel = 0;
@@ -264,6 +294,7 @@
     }
 
     function drawWheel() {
+      rad = canvas.width / 2;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       sectors.forEach((s, i) => {
         const a = arc * i + ang;
