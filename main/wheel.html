@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Spin the Wheel 🎡</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #feefe5;
+      font-family: 'Pixelify Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 30px;
+      padding: 30px;
+    }
+
+    h1 {
+      font-size: 3rem;
+      color: #333;
+      text-align: center;
+    }
+
+    h4 {
+      font-size: 1.4rem;
+      color: #555;
+      text-align: center;
+    }
+
+    .back-btn {
+      font-family: 'Pixelify Sans', sans-serif;
+      font-size: 1.2rem;
+      background: none;
+      border: 2px solid #333;
+      color: #333;
+      padding: 10px 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .back-btn:hover {
+      background: #333;
+      color: #feefe5;
+    }
+
+    .wheel-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: nowrap;
+      width: 100%;
+    }
+
+    .cat {
+      width: 200px;
+      height: 200px;
+      flex-shrink: 1;
+      min-width: 80px;
+    }
+
+    .cat img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .cat-left { animation: bounce 0.8s infinite; }
+    .cat-right { animation: bounce-flip 0.8s infinite; }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-25px); }
+    }
+
+    @keyframes bounce-flip {
+      0%, 100% { transform: scaleX(-1) translateY(0); }
+      50% { transform: scaleX(-1) translateY(-25px); }
+    }
+
+    .wheel-area {
+      position: relative;
+      flex-shrink: 1;
+    }
+
+    .pointer {
+      position: absolute;
+      top: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 18px solid transparent;
+      border-right: 18px solid transparent;
+      border-top: 36px solid #333;
+      z-index: 10;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+    }
+
+    canvas {
+      display: block;
+      border-radius: 50%;
+      box-shadow: 0 6px 32px rgba(0,0,0,0.2);
+    }
+
+    .spin-btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: #fff;
+      border: 5px solid #333;
+      font-family: 'Pixelify Sans', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: #333;
+      box-shadow: 0 0 0 5px #fff, 0 4px 16px rgba(0,0,0,0.3);
+      transition: transform 0.1s, box-shadow 0.1s;
+      z-index: 10;
+    }
+
+    .spin-btn:hover {
+      transform: translate(-50%, -50%) scale(1.08);
+    }
+
+    .spin-btn:active {
+      transform: translate(-50%, -50%) scale(0.95);
+    }
+
+    .result-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .result-overlay.show {
+      display: flex;
+    }
+
+    .result-box {
+      background: #feefe5;
+      border: 5px solid #333;
+      border-radius: 20px;
+      padding: 50px 60px;
+      text-align: center;
+      animation: pop 0.3s ease;
+      max-width: 500px;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.7); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .result-box h2 {
+      font-size: 1.8rem;
+      color: #333;
+      margin-bottom: 16px;
+    }
+
+    .result-box h3 {
+      font-size: 1.2rem;
+      color: #555;
+      margin-top: 20px;
+      line-height: 1.5;
+    }
+
+    .result-label {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #333;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎡 Spin the Wheel!</h1>
+  <h1>BAWAL MANGDAYA</h1>
+  <h4>ang mangdaya mahuhulog sa hell. 👹</h4>
+  <button class="back-btn" onclick="window.location.href='index.html'">← Back</button>
+
+  <div class="wheel-wrapper">
+    <div class="cat cat-left">
+      <img src="\assets/cat-cat-jumping.gif" alt="cat" />
+    </div>
+
+    <div class="wheel-area">
+      <div class="pointer"></div>
+      <canvas id="wheel" width="600" height="600"></canvas>
+      <button class="spin-btn" id="spinBtn">SPIN</button>
+    </div>
+
+    <div class="cat cat-right">
+      <img src="\assets/cat-cat-jumping.gif" alt="cat" />
+    </div>
+  </div>
+
+  <div class="result-overlay" id="resultOverlay">
+    <div class="result-box">
+      <h2>Ang nakuha mo ayyy...</h2>
+      <div class="result-label" id="resultLabel"></div>
+      <br>
+      <h3>SS moto tas send mo sakin. 
+        Happy Birthday Heart ❤️!</h3>
+    </div>
+  </div>
+
+  <script>
+    const sectors = [
+      { color: "#FFBC03", label: "Starlight sa emel" },
+      { color: "#FF5A10", label: "Kung ano gusto mo, basta wag lang mamahalin, kupal." },
+      { color: "#f4a9c0", label: "Skin sa emel, ikaw pumili (yung pwedeng bilin)" },
+    ];
+
+    const canvas = document.getElementById("wheel");
+    const ctx = canvas.getContext("2d");
+    const spinBtn = document.getElementById("spinBtn");
+    const resultOverlay = document.getElementById("resultOverlay");
+    const resultLabel = document.getElementById("resultLabel");
+
+    const tot = sectors.length;
+    const arc = (2 * Math.PI) / tot;
+    const rad = canvas.width / 2;
+
+    let ang = 0;
+    let angVel = 0;
+    let spinning = false;
+
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+      const words = text.split(' ');
+      let line = '';
+      const lines = [];
+      for (let w of words) {
+        const test = line ? line + ' ' + w : w;
+        if (ctx.measureText(test).width > maxWidth && line) {
+          lines.push(line);
+          line = w;
+        } else {
+          line = test;
+        }
+      }
+      lines.push(line);
+      const startY = y - ((lines.length - 1) * lineHeight) / 2;
+      lines.forEach((l, i) => ctx.fillText(l, x, startY + i * lineHeight));
+    }
+
+    function drawWheel() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      sectors.forEach((s, i) => {
+        const a = arc * i + ang;
+
+        ctx.beginPath();
+        ctx.fillStyle = s.color;
+        ctx.moveTo(rad, rad);
+        ctx.arc(rad, rad, rad - 2, a, a + arc);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(rad, rad);
+        ctx.rotate(a + arc / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#333";
+        ctx.font = "bold 16px 'Pixelify Sans', sans-serif";
+        wrapText(ctx, s.label, rad - 25, 0, rad * 0.72, 20);
+        ctx.restore();
+      });
+
+      ctx.beginPath();
+      ctx.arc(rad, rad, 28, 0, 2 * Math.PI);
+      ctx.fillStyle = "#fff";
+      ctx.fill();
+      ctx.strokeStyle = "#333";
+      ctx.lineWidth = 4;
+      ctx.stroke();
+    }
+
+    function getWinner() {
+      const normalized = ((-ang % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+      const idx = Math.floor(normalized / arc) % tot;
+      return sectors[idx];
+    }
+
+    function loop() {
+      if (angVel > 0) {
+        angVel *= 0.991;
+        if (angVel < 0.002) {
+          angVel = 0;
+          spinning = false;
+          spinBtn.textContent = "SPIN";
+          const winner = getWinner();
+          resultLabel.textContent = winner.label;
+          resultOverlay.classList.add("show");
+        }
+        ang += angVel;
+        ang %= 2 * Math.PI;
+      }
+      drawWheel();
+      requestAnimationFrame(loop);
+    }
+
+    spinBtn.addEventListener("click", () => {
+      if (spinning) return;
+      resultOverlay.classList.remove("show");
+      spinning = true;
+      angVel = Math.random() * 0.2 + 0.25;
+      spinBtn.textContent = "...";
+    });
+
+    loop();
+  </script>
+</body>
+</html>

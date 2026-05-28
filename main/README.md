@@ -1,0 +1,2 @@
+## Summer Project and a Birthday Present!
+Happy birthday 19th birthday kay heart! It was a pleasure making this project as I had fun de-rusting my HTML, CSS, and JS skills after not having to use them for a while!
